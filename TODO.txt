@@ -1,0 +1,6 @@
+* make a startup file that spins off the servers onto threads and then
+  runs the client
+
+* finish protocols state machines
+
+* add trudy
