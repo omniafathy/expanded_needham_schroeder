@@ -26,13 +26,17 @@ abstract class TcpServer extends TcpObject {
   } 
 
   public void start() {
+    start(port);
+  }
+
+  public void start(Integer serverPort) {
     ServerSocket serverSocket = null; 
     Socket clientSocket = null;
     PrintWriter out = null;
     BufferedReader in = null;
 
     try {
-      serverSocket = new ServerSocket(port);
+      serverSocket = new ServerSocket(serverPort);
       // Start accepting connections
       while(true) { 
         clientSocket = serverSocket.accept();
@@ -48,10 +52,15 @@ abstract class TcpServer extends TcpObject {
         while ((inputLine = in.readLine()) != null) {   
           outputLine = protocol.processInput(inputLine);
           out.println(outputLine);
+
+          if (protocol.disconnect()) {
+            break; 
+          }
         }
 
         // clean up
         cleanUp(null, clientSocket, out, in);
+        protocol.cleanUp();
       }
     }
     catch(Exception e) {

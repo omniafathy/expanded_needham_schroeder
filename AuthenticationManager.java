@@ -93,13 +93,16 @@ class AuthenticationManager {
   }
 
 
-  //public static void main(String[] args) {
-  //  String keyStr = "DEADBEEFDEADBEEFDEADBEEF";
-  //  AuthenticationManager authman = new AuthenticationManager(keyStr); 
-  //  System.out.println(authman.decrypt(authman.encrypt("foobar")));
-  //  for(int i = 0; i < 10; i++) {
-  //    System.out.println(authman.getNonce());
-  //  }
-  //}
+ // public static void main(String[] args) {
+ //   String keyStr = "DEADBEEFDEADBEEFDEADBEEF";
+ //   AuthenticationManager authman = new AuthenticationManager(keyStr); 
+ //   System.out.println(authman.encrypt("foobarss"));
+ //   for(int i = 0; i < 10; i++) {
+ //     long nonce = authman.getNonce();
+ //     String ticket = keyStr + "Alice" + nonce;
+ //     System.out.println(authman.encrypt(Long.toString(nonce)));
+ //     System.out.println(Long.toString(nonce));
+ //   }
+ // }
 }
 

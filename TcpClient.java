@@ -5,8 +5,12 @@ abstract class TcpClient extends TcpObject {
   private static String host = "localhost";
 
   public void start() {
+    start(port);
+  }
+
+  public void start(Integer serverPort) {
     try {
-      Socket socket = new Socket(host, port);
+      Socket socket = new Socket(host, serverPort);
       PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
       BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
