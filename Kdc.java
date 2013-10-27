@@ -1,10 +1,11 @@
 public class Kdc extends TcpServer {
+  public static Integer PORT = 8899;
+
   public Protocol getProtocol() {
     return new NeedhamSchroederKdcProtocol();
   }
 
-  public static void main(String[] args) {
-    Kdc kdc = new Kdc();
-    kdc.start(port + 1);
+  public Integer getPort() {
+    return PORT;
   }
 }

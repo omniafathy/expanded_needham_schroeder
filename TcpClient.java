@@ -2,12 +2,6 @@ import java.io.*;
 import java.net.*;
 
 abstract class TcpClient extends TcpObject {
-  private static String host = "localhost";
-
-  public void start() {
-    start(port);
-  }
-
   public void start(Integer serverPort) {
     try {
       Socket socket = new Socket(host, serverPort);

@@ -25,7 +25,7 @@ public class NeedhamSchroederClientProtocol extends Protocol {
   }
 
   public void cleanUp() {
-    init(); 
+    init();
   }
 
   public boolean disconnect() {

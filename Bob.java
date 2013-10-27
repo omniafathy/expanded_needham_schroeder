@@ -1,11 +1,12 @@
 public class Bob extends TcpServer {
+  public static Integer PORT = 8889;
+
   public Protocol getProtocol() {
     return new NeedhamSchroederServerProtocol();
   }
 
-  public static void main(String[] args) {
-    Bob bob = new Bob();
-    bob.start();
+  public Integer getPort() {
+    return PORT;
   }
 }
 

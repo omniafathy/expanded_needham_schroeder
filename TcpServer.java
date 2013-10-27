@@ -2,7 +2,7 @@ import java.lang.*;
 import java.io.*;
 import java.net.*;
 
-abstract class TcpServer extends TcpObject {
+abstract class TcpServer extends TcpObject implements Runnable {
   private void cleanUp(ServerSocket ss, Socket cs, PrintWriter pw, BufferedReader br) {
     try {
       if(pw != null) {
@@ -23,10 +23,14 @@ abstract class TcpServer extends TcpObject {
     } catch(Exception e) {
       Util.printException("TcpServer - cleanUp", e);
     }
-  } 
+  }
+
+  public void run() {
+    start();
+  }
 
   public void start() {
-    start(port);
+    start(getPort());
   }
 
   public void start(Integer serverPort) {
@@ -68,6 +72,5 @@ abstract class TcpServer extends TcpObject {
       cleanUp(serverSocket, clientSocket, out, in);
     }
   }
-  
 }
 
