@@ -33,6 +33,9 @@ run: install
 runAlice: alice
 	java Alice
 
+runAuth: authman
+	java AuthenticationManager
+
 runBob: bob
 	java Bob
 

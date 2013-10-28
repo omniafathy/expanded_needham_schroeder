@@ -5,7 +5,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.nio.*;
 
 class AuthenticationManager {
-  private static String format = "DESede/CBC/NOPADDING";
+  private static String format = "DESede/CBC/PKCS5Padding";
   private static String encryptionAlgorithm = "DESede";
   private Cipher cipher = null;
   private SecretKey key = null;
@@ -40,7 +40,7 @@ class AuthenticationManager {
     byte[] cipherText = null;
 
     try {
-      cipherText = getCipher(Cipher.ENCRYPT_MODE).doFinal(message.getBytes());
+      cipherText = getCipher(Cipher.ENCRYPT_MODE).doFinal(message.getBytes("UTF-8"));
     }
     catch(Exception e) {
       Util.printException("encrypt", e);
@@ -75,12 +75,12 @@ class AuthenticationManager {
 
   // accepts a key as a string and returns a key
   public SecretKey stringToKey(String strKey) {
-    byte[] keyInBytes = strKey.getBytes();
     SecretKey newKey = null;
     DESedeKeySpec spec;
     SecretKeyFactory factory;
 
     try {
+      byte[] keyInBytes = strKey.getBytes("UTF-8");
       spec = new DESedeKeySpec(keyInBytes);
       factory = SecretKeyFactory.getInstance(encryptionAlgorithm);
       newKey = factory.generateSecret(spec);
@@ -93,16 +93,14 @@ class AuthenticationManager {
   }
 
 
- // public static void main(String[] args) {
- //   String keyStr = "DEADBEEFDEADBEEFDEADBEEF";
- //   AuthenticationManager authman = new AuthenticationManager(keyStr); 
- //   System.out.println(authman.encrypt("foobarss"));
- //   for(int i = 0; i < 10; i++) {
- //     long nonce = authman.getNonce();
- //     String ticket = keyStr + "Alice" + nonce;
- //     System.out.println(authman.encrypt(Long.toString(nonce)));
- //     System.out.println(Long.toString(nonce));
- //   }
- // }
+  public static void main(String[] args) {
+    String keyStr1 = "DEADBEEFDEADBEEFDEADBEEF";
+    String keyStr2 = "DEADBEEFDEADBEEFDEADBEEF";
+    AuthenticationManager authman1 = new AuthenticationManager(keyStr1); 
+    AuthenticationManager authman2 = new AuthenticationManager(keyStr2); 
+    String test1 = new String(authman1.encrypt("foobarss"));
+    String test2 = authman1.decrypt(test1.getBytes());
+    System.out.println(test1 + " == " + test2);
+  }
 }
 

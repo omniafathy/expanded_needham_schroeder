@@ -54,6 +54,7 @@ public class NeedhamSchroederServerProtocol extends Protocol {
 
   public String processInput(String input) {
     String output = null;
+    printInput("Server", input);
     if(current_state == State.TICKET) {
       output = receiveTicket(input);
     }
@@ -71,38 +72,50 @@ public class NeedhamSchroederServerProtocol extends Protocol {
   }
 
   public String receiveChallenge(String input) {
-    if(challenge == 0) {
+    try {
+      if(challenge == 0) {
+        return null;
+      }
+
+      long answer = Long.valueOf(authAlice.decrypt(input.getBytes("UTF-8")));
+      if(challenge == answer + 1) {
+        nextState();
+      }
+      else {
+        cleanUp();
+      }
+
+      return null;
+    } 
+    catch(Exception e) {
+      Util.printException("ServerProto#receiveChallenge", e);
       return null;
     }
-
-    long answer = Long.valueOf(authAlice.decrypt(input.getBytes()));
-    if(challenge == answer + 1) {
-      nextState();
-    }
-    else {
-      cleanUp();
-    }
-
-    return null;
-  }
+}
 
   public String receiveTicket(String input) {
-    // ticket i = 0, Kab{N1} i = 1
-    String[] request = input.split(",");
-    // Kab i = 0, Alice i = 1
-    String[] ticket = authKDC.decrypt(request[0].getBytes()).split(",");
+    try {
+      // ticket i = 0, Kab{N1} i = 1
+      String[] request = input.split(",");
+      // Kab i = 0, Alice i = 1
+      String[] ticket = authKDC.decrypt(request[0].getBytes("UTF-8")).split(",");
 
-    if(!knownClients.contains(ticket[1])) {
+      if(!knownClients.contains(ticket[1])) {
+        return null;
+      }
+
+      authAlice = new AuthenticationManager(ticket[0]);
+      long nonce = Long.valueOf(authAlice.decrypt(request[1].getBytes("UTF-8")));
+      long answer = nonce - 1;
+      challenge = authAlice.getNonce();
+
+      nextState();
+      byte[] response = authAlice.encrypt(answer + "," + challenge);
+      return new String(response);
+    } 
+    catch(Exception e) {
+      Util.printException("ServerProto#receiveTicket", e);
       return null;
     }
-
-    authAlice = new AuthenticationManager(ticket[0]);
-    long nonce = Long.valueOf(authAlice.decrypt(request[1].getBytes()));
-    long answer = nonce - 1;
-    challenge = authAlice.getNonce();
-
-    nextState();
-    byte[] response = authAlice.encrypt(answer + "," + challenge);
-    return new String(response);
   }
 }

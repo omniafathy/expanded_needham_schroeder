@@ -14,6 +14,9 @@ public class NeedhamSchroederKdcProtocol extends Protocol {
 
   public NeedhamSchroederKdcProtocol() {
     authAlice = new AuthenticationManager(KEY_ALICE);
+    System.out.print("KDC -> Alice: ");
+    authAlice.printSecretKey();
+    
     authBob = new AuthenticationManager(KEY_BOB);
     knownClients = new ArrayList<String>();
     init();
@@ -41,6 +44,7 @@ public class NeedhamSchroederKdcProtocol extends Protocol {
   }
 
   public String processInput(String input) {
+    printInput("KDC", input);
     return receiveKeyRequest(input);
   }
 
@@ -63,7 +67,9 @@ public class NeedhamSchroederKdcProtocol extends Protocol {
     // Kab i = 0, Alice i = 1
     String ticket = new String(authBob.encrypt(KEY_AB + "," + parties[0]));
     String message = request[0] + "," + parties[1] + "," +  KEY_AB + "," + ticket; 
-
+System.out.println("encrypting: " + message);
+System.out.print("with key: ");
+authAlice.printSecretKey();
     byte[] response = authAlice.encrypt(message);
     return new String(response);
   }

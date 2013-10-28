@@ -3,4 +3,8 @@ abstract class Protocol {
   abstract String getMessage();
   abstract String processInput(String input); 
   abstract void cleanUp(); 
+
+  public void printInput(String protocol, String input) {
+    System.out.println(protocol + " - " + input);
+  }
 }
