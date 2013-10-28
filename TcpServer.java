@@ -55,14 +55,16 @@ abstract class TcpServer extends TcpObject implements Runnable {
 
         while ((inputLine = in.readLine()) != null) {   
           outputLine = protocol.processInput(inputLine);
-          out.println(outputLine);
-
           if (protocol.disconnect()) {
+            System.out.println("Disconnected");
             break; 
           }
+
+          out.println(outputLine);
         }
 
         // clean up
+        protocol.cleanUp();
         cleanUp(null, clientSocket, out, in);
         protocol.cleanUp();
       }

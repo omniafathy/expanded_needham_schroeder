@@ -7,8 +7,20 @@ class Util {
     System.out.println(e.getClass());
   }
 
+  public static byte[] toByteArray(String hex) {
+    int len = hex.length();
+    byte[] bytes = new byte[len / 2];
+
+    for(int i = 0; i < len; i += 2) {
+      bytes[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
+          + Character.digit(hex.charAt(i+1), 16));
+    }
+
+    return bytes;
+  }
+
   public static String toHexString(byte[] _bytes) {
-    return toHexString(_bytes, true);
+    return toHexString(_bytes, false);
   }
 
   public static String toHexString(byte[] _bytes, boolean prependX) {

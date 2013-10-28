@@ -21,6 +21,7 @@ abstract class TcpClient extends TcpObject {
         out.println(outputLine);
       }
 
+      protocol.cleanUp();
       out.close();
       in.close();
       socket.close();

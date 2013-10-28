@@ -21,6 +21,19 @@ class AuthenticationManager {
     }
   }
 
+  public byte[] decryptBytes(byte[] cipher) {
+    byte[] messageBytes = null;
+
+    try {
+      messageBytes = getCipher(Cipher.DECRYPT_MODE).doFinal(cipher);
+    }
+    catch(Exception e) {
+      Util.printException("decrypt", e);
+    }
+
+    return messageBytes;
+  }
+
   public String decrypt(byte[] cipher) {
     byte[] messageBytes = null;
     String message = null;
@@ -34,6 +47,19 @@ class AuthenticationManager {
     }
 
     return message;
+  }
+
+  public byte[] encrypt(byte[] message) {
+    byte[] cipherText = null;
+
+    try {
+      cipherText = getCipher(Cipher.ENCRYPT_MODE).doFinal(message);
+    }
+    catch(Exception e) {
+      Util.printException("encrypt", e);
+    }
+
+    return cipherText;
   }
 
   public byte[] encrypt(String message) {
@@ -93,14 +119,15 @@ class AuthenticationManager {
   }
 
 
-  public static void main(String[] args) {
-    String keyStr1 = "DEADBEEFDEADBEEFDEADBEEF";
-    String keyStr2 = "DEADBEEFDEADBEEFDEADBEEF";
-    AuthenticationManager authman1 = new AuthenticationManager(keyStr1); 
-    AuthenticationManager authman2 = new AuthenticationManager(keyStr2); 
-    String test1 = new String(authman1.encrypt("foobarss"));
-    String test2 = authman1.decrypt(test1.getBytes());
-    System.out.println(test1 + " == " + test2);
-  }
+//  public static void main(String[] args) throws Exception {
+//    String keyStr1 = "DEADBEEFDEADBEEFDEADBEEF";
+//    String keyStr2 = "DEADBEEFDEADBEEFDEADBEEF";
+//    AuthenticationManager authman1 = new AuthenticationManager(keyStr1); 
+//    AuthenticationManager authman2 = new AuthenticationManager(keyStr2); 
+//    String big = keyStr1 + keyStr1 + keyStr1 + keyStr1 + keyStr1 + keyStr2;
+//    String test1 = Util.toHexString(authman1.encrypt(big));
+//    String test2 = authman2.decrypt(Util.toByteArray(test1));
+//    System.out.println(test2);
+//  }
 }
 

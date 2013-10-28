@@ -5,6 +5,7 @@ public class NeedhamSchroederClientProtocol extends Protocol {
   private AuthenticationManager authBob, authKDC;
   private static String KEY_ALICE = "MMEOWMIXXMEOWMIXXEOWMIXX";
   private long challenge, challengeKDC;
+  private String challengeServer;
   private State current_state;
   private ArrayList<String> knownHosts;
   private boolean disconnect;
@@ -16,8 +17,6 @@ public class NeedhamSchroederClientProtocol extends Protocol {
 
   public NeedhamSchroederClientProtocol() {
     authKDC = new AuthenticationManager(KEY_ALICE);
-    System.out.print("Alice -> KDC: ");
-    authKDC.printSecretKey();
     knownHosts = new ArrayList<String>();
     init();
   }
@@ -28,7 +27,7 @@ public class NeedhamSchroederClientProtocol extends Protocol {
   }
 
   public void cleanUp() {
-    init();
+    disconnect = false;
   }
 
   public boolean disconnect() {
@@ -45,7 +44,7 @@ public class NeedhamSchroederClientProtocol extends Protocol {
         challengeKDC = authKDC.getNonce();
         return challengeKDC + ",Alice/Bob";
       case CHALLENGE:
-        break;
+        return challengeServer;
       default:
         break;
     }
@@ -96,9 +95,9 @@ public class NeedhamSchroederClientProtocol extends Protocol {
       }
       // answer i = 0
       // challenge i = 1
-      String[] request = authBob.decrypt(input.getBytes("UTF-8")).split(",");
+      String[] request = authBob.decrypt(Util.toByteArray(input)).split(",");
       long answerFromHost = Long.valueOf(request[0]);
-
+      
       if(challenge == answerFromHost + 1) {
         nextState();
       }
@@ -109,7 +108,7 @@ public class NeedhamSchroederClientProtocol extends Protocol {
       long answer = Long.valueOf(request[1]);
       byte[] response = authBob.encrypt(String.valueOf(answer - 1));
 
-      return new String(response);
+      return Util.toHexString(response);
     }
     catch(Exception e) {
       Util.printException("ClientProto#receiveChallenge", e);
@@ -124,11 +123,7 @@ public class NeedhamSchroederClientProtocol extends Protocol {
        // Host i = 1
        // Kab i = 2
        // ticket i = 3
-  System.out.println("Decrypting: " + input);
-  System.out.print("with key: ");
-  authKDC.printSecretKey();
-   
-      String[] request = authKDC.decrypt(input.getBytes("UTF-8")).split(",");
+      String[] request = authKDC.decrypt(Util.toByteArray(input)).split(",");
 
       if(!knownHosts.contains(request[1])) {
         dropConnection();
@@ -139,9 +134,11 @@ public class NeedhamSchroederClientProtocol extends Protocol {
       challenge = authBob.getNonce();
 
       nextState();
-      String response = new String(authBob.encrypt(String.valueOf(challenge)));
+      String response = Util.toHexString(authBob.encrypt(String.valueOf(challenge)));
       response = request[3] + "," + response;
-      return response;
+      challengeServer = response;
+      dropConnection();
+      return null;
     }
     catch(Exception e) {
       Util.printException("ClientProto#receiveTicket", e);

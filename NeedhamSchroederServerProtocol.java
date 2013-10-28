@@ -24,7 +24,7 @@ public class NeedhamSchroederServerProtocol extends Protocol {
   }
 
   public void cleanUp() {
-    init(); 
+    disconnect = false;
   }
 
   public boolean disconnect() {
@@ -46,6 +46,9 @@ public class NeedhamSchroederServerProtocol extends Protocol {
         break;
       case CHALLENGE:
         current_state = State.AUTHENTICATED;
+        dropConnection();
+        break;
+      case AUTHENTICATED:
         break;
       default:
         break;
@@ -76,8 +79,8 @@ public class NeedhamSchroederServerProtocol extends Protocol {
       if(challenge == 0) {
         return null;
       }
-
-      long answer = Long.valueOf(authAlice.decrypt(input.getBytes("UTF-8")));
+      
+      long answer = Long.valueOf(authAlice.decrypt(Util.toByteArray(input)));
       if(challenge == answer + 1) {
         nextState();
       }
@@ -98,20 +101,20 @@ public class NeedhamSchroederServerProtocol extends Protocol {
       // ticket i = 0, Kab{N1} i = 1
       String[] request = input.split(",");
       // Kab i = 0, Alice i = 1
-      String[] ticket = authKDC.decrypt(request[0].getBytes("UTF-8")).split(",");
+      String[] ticket = authKDC.decrypt(Util.toByteArray(request[0])).split(",");
 
       if(!knownClients.contains(ticket[1])) {
         return null;
       }
 
       authAlice = new AuthenticationManager(ticket[0]);
-      long nonce = Long.valueOf(authAlice.decrypt(request[1].getBytes("UTF-8")));
+      long nonce = Long.valueOf(authAlice.decrypt(Util.toByteArray(request[1])));
       long answer = nonce - 1;
       challenge = authAlice.getNonce();
 
       nextState();
       byte[] response = authAlice.encrypt(answer + "," + challenge);
-      return new String(response);
+      return Util.toHexString(response);
     } 
     catch(Exception e) {
       Util.printException("ServerProto#receiveTicket", e);
