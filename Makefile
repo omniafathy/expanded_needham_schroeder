@@ -1,4 +1,4 @@
-install: authman alice bob kdc nsclient nskdc nsserver NSRunner protocol tcpClient tcpObject tcpServer util
+install: authman alice bob ENSclient ENSkdc ENSserver kdc nsclient nskdc nsserver NSRunner protocol tcpClient tcpObject tcpServer util
 
 authman: AuthenticationManager.java
 	javac AuthenticationManager.java
@@ -8,6 +8,15 @@ alice: Alice.java
 
 bob: Bob.java
 	javac Bob.java
+
+ENSclient: ExpandedNeedhamSchroederClientProtocol.java
+	javac ExpandedNeedhamSchroederKdcProtocol.java
+
+ENSkdc: ExpandedNeedhamSchroederKdcProtocol.java
+	javac ExpandedNeedhamSchroederKdcProtocol.java
+
+ENSserver: ExpandedNeedhamSchroederServerProtocol.java
+	javac ExpandedNeedhamSchroederServerProtocol.java
 
 kdc: Kdc.java
 	javac Kdc.java

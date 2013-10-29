@@ -66,7 +66,6 @@ abstract class TcpServer extends TcpObject implements Runnable {
         // clean up
         protocol.cleanUp();
         cleanUp(null, clientSocket, out, in);
-        protocol.cleanUp();
       }
     }
     catch(Exception e) {

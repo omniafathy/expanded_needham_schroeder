@@ -44,7 +44,7 @@ class Util {
       if (!file.exists()) {
         file.createNewFile();
       }
- 
+
       FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
       BufferedWriter bw = new BufferedWriter(fw);
       bw.write(content + "\n");

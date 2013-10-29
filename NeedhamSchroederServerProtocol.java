@@ -1,12 +1,12 @@
 import java.util.ArrayList;
 
 public class NeedhamSchroederServerProtocol extends Protocol {
-  private AuthenticationManager authAlice, authKDC;
+  protected AuthenticationManager authAlice, authKDC;
   private static String KEY_BOB = "DEADBEEFDEADBEEFDEADBEEF";
-  private long challenge;
-  private State current_state;
-  private ArrayList<String> knownClients;
-  private boolean disconnect;
+  protected long challenge;
+  protected State current_state;
+  protected ArrayList<String> knownClients;
+  protected boolean disconnect;
   protected enum State { 
     TICKET,
     CHALLENGE,
@@ -65,6 +65,7 @@ public class NeedhamSchroederServerProtocol extends Protocol {
       output = receiveChallenge(input);
     }
 
+    printOutput("Server", output);
     return output;
   }
 
@@ -79,7 +80,7 @@ public class NeedhamSchroederServerProtocol extends Protocol {
       if(challenge == 0) {
         return null;
       }
-      
+
       long answer = Long.valueOf(authAlice.decrypt(Util.toByteArray(input)));
       if(challenge == answer + 1) {
         nextState();
@@ -89,12 +90,12 @@ public class NeedhamSchroederServerProtocol extends Protocol {
       }
 
       return null;
-    } 
+    }
     catch(Exception e) {
       Util.printException("ServerProto#receiveChallenge", e);
       return null;
     }
-}
+  }
 
   public String receiveTicket(String input) {
     try {
@@ -115,7 +116,7 @@ public class NeedhamSchroederServerProtocol extends Protocol {
       nextState();
       byte[] response = authAlice.encrypt(answer + "," + challenge);
       return Util.toHexString(response);
-    } 
+    }
     catch(Exception e) {
       Util.printException("ServerProto#receiveTicket", e);
       return null;

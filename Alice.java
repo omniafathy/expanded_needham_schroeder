@@ -10,7 +10,7 @@ public class Alice extends TcpClient {
   }
 
   public Alice() {
-    protocol = new NeedhamSchroederClientProtocol();
+    protocol = new ExpandedNeedhamSchroederClientProtocol();
   }
 
   public Integer getPort() {
@@ -27,6 +27,7 @@ public class Alice extends TcpClient {
   }
 
   public void start() {
+    start(hosts.get("Bob"));
     start(hosts.get("KDC"));
     start(hosts.get("Bob"));
   }

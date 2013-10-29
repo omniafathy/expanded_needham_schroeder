@@ -2,13 +2,13 @@ import java.util.ArrayList;
 import java.io.*;
 
 public class NeedhamSchroederClientProtocol extends Protocol {
-  private AuthenticationManager authBob, authKDC;
+  protected AuthenticationManager authBob, authKDC;
   private static String KEY_ALICE = "MMEOWMIXXMEOWMIXXEOWMIXX";
-  private long challenge, challengeKDC;
-  private String challengeServer;
-  private State current_state;
+  protected long challenge, challengeKDC;
+  protected String challengeServer, nonceChallenge;
+  protected State current_state;
   private ArrayList<String> knownHosts;
-  private boolean disconnect;
+  protected boolean disconnect;
   protected enum State { 
     TICKET,
     CHALLENGE,
@@ -39,17 +39,21 @@ public class NeedhamSchroederClientProtocol extends Protocol {
   }
 
   public String getMessage() {
+    String output = null;
     switch(current_state) {
       case TICKET:
         challengeKDC = authKDC.getNonce();
-        return challengeKDC + ",Alice/Bob";
+        output = challengeKDC + ",Alice/Bob";
+        break;
       case CHALLENGE:
-        return challengeServer;
+        output = challengeServer;
+        break;
       default:
         break;
     }
 
-    return null;
+    printOutput("Client", output);
+    return output;
   }
 
   protected void nextState() {
@@ -79,6 +83,7 @@ public class NeedhamSchroederClientProtocol extends Protocol {
         break;
     }
 
+    printOutput("Client", output);
     return output;
   }
 
@@ -89,7 +94,7 @@ public class NeedhamSchroederClientProtocol extends Protocol {
   }
 
   public String receiveChallenge(String input) {
-    try {  
+    try {
       if(challenge == 0) {
         return null;
       }
@@ -97,7 +102,7 @@ public class NeedhamSchroederClientProtocol extends Protocol {
       // challenge i = 1
       String[] request = authBob.decrypt(Util.toByteArray(input)).split(",");
       long answerFromHost = Long.valueOf(request[0]);
-      
+
       if(challenge == answerFromHost + 1) {
         nextState();
       }

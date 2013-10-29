@@ -1,12 +1,12 @@
 import java.util.ArrayList;
 
 public class NeedhamSchroederKdcProtocol extends Protocol {
-  private AuthenticationManager authAlice, authBob;
+  protected AuthenticationManager authAlice, authBob;
   private static String KEY_BOB = "DEADBEEFDEADBEEFDEADBEEF";
-  private static String KEY_AB = "ALICEWANTSBOB12345678910";
+  protected static String KEY_AB = "ALICEWANTSBOB12345678910";
   private static String KEY_ALICE = "MMEOWMIXXMEOWMIXXEOWMIXX";
   private State current_state;
-  private ArrayList<String> knownClients;
+  protected ArrayList<String> knownClients;
   private boolean disconnect;
   protected enum State { 
     KEY_REQUEST
@@ -42,7 +42,9 @@ public class NeedhamSchroederKdcProtocol extends Protocol {
 
   public String processInput(String input) {
     printInput("KDC", input);
-    return receiveKeyRequest(input);
+    String output = receiveKeyRequest(input);
+    printOutput("KDC", output);
+    return output;
   }
 
   protected void init() {
@@ -64,12 +66,12 @@ public class NeedhamSchroederKdcProtocol extends Protocol {
     // Kab i = 0, Alice i = 1
     String ticket = Util.toHexString(authBob.encrypt(KEY_AB + "," + parties[0]));
     String message = request[0] + "," + parties[1] + "," +  KEY_AB + "," + ticket; 
-    
+
     byte[] response = authAlice.encrypt(message);
     return Util.toHexString(response);
   }
 
-  private boolean validateParties(String[] party) {
+  protected boolean validateParties(String[] party) {
     for(String p : party) {
       if(!knownClients.contains(p)) {
         return false;
@@ -79,3 +81,4 @@ public class NeedhamSchroederKdcProtocol extends Protocol {
     return true;
   }
 }
+
