@@ -1,9 +1,15 @@
 public class Kdc extends TcpServer {
   public static Integer PORT = 8899;
   private Protocol proto = null;
+  private boolean expanded = false;
 
   public Kdc() {
-    proto = new ExpandedNeedhamSchroederKdcProtocol();
+    if(expanded) {
+      proto = new ExpandedNeedhamSchroederKdcProtocol();
+    }
+    else {
+      proto = new NeedhamSchroederKdcProtocol();
+    }
   }
 
   public Protocol getProtocol() {

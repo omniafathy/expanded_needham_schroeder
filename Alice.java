@@ -4,13 +4,19 @@ public class Alice extends TcpClient {
   private static HashMap<String, Integer> hosts;
   public static Integer PORT = 8879;
   private NeedhamSchroederClientProtocol protocol;
+  private boolean expanded = false;
   static {
     hosts = new HashMap<String, Integer>();
     buildHosts();
   }
 
   public Alice() {
-    protocol = new ExpandedNeedhamSchroederClientProtocol();
+    if(expanded) {
+      protocol = new ExpandedNeedhamSchroederClientProtocol();
+    }
+    else {
+      protocol = new NeedhamSchroederClientProtocol();
+    }
   }
 
   public Integer getPort() {

@@ -3,13 +3,16 @@ import javax.crypto.*;
 import javax.crypto.spec.*;
 import javax.xml.bind.DatatypeConverter;
 import java.nio.*;
+import java.util.Arrays;
 
 class AuthenticationManager {
-  private static String format = "DESede/CBC/PKCS5Padding";
+  private static String format = "DESede/ECB/NOPADDING";
+  private static String format1 = "DESede/ECB/PKCS5Padding";
   private static String encryptionAlgorithm = "DESede";
   private Cipher cipher = null;
   private SecretKey key = null;
   private SecureRandom rand = null;
+  private static int BIT_ALIGNMENT = 8;
 
   public AuthenticationManager(String _key) {
     try {
@@ -49,24 +52,13 @@ class AuthenticationManager {
     return message;
   }
 
-  public byte[] encrypt(byte[] message) {
-    byte[] cipherText = null;
-
-    try {
-      cipherText = getCipher(Cipher.ENCRYPT_MODE).doFinal(message);
-    }
-    catch(Exception e) {
-      Util.printException("encrypt", e);
-    }
-
-    return cipherText;
-  }
-
   public byte[] encrypt(String message) {
     byte[] cipherText = null;
 
     try {
-      cipherText = getCipher(Cipher.ENCRYPT_MODE).doFinal(message.getBytes("UTF-8"));
+      //byte[] bytes = padMessage(message.getBytes("UTF-8"));
+      byte[] bytes = message.getBytes("UTF-8");
+      cipherText = getCipher(Cipher.ENCRYPT_MODE).doFinal(bytes);
     }
     catch(Exception e) {
       Util.printException("encrypt", e);
@@ -95,6 +87,19 @@ class AuthenticationManager {
     return ByteBuffer.wrap(nonce).getLong();
   }
 
+  public byte[] padMessage(byte[] bytes) {
+    return padMessage(bytes, BIT_ALIGNMENT);
+  }
+
+  public byte[] padMessage(byte[] bytes, int bit_alignment) {
+    int paddingSize = bit_alignment - (bytes.length % bit_alignment);
+    int newSize = bytes.length + paddingSize;
+    byte[] paddedBytes = Arrays.copyOf(bytes, newSize);
+System.out.println(newSize);
+System.out.println(bytes.length + " + " + paddingSize + " = " + newSize);
+    return paddedBytes;
+  }
+
   public void printSecretKey() {
     System.out.println(Util.toHexString(key.getEncoded()));
   }
@@ -118,16 +123,43 @@ class AuthenticationManager {
     return newKey;
   }
 
+  public long[] extractNonces(String cipherText) {
+    long[] nonces = new long[2];
+    byte[] bytes = Util.toByteArray(cipherText);
+    int padding = bytes[bytes.length - 1];
+    System.out.println("Cipher: " + cipherText);
+    System.out.println("Padding: " + padding);
+    System.out.println("Size: " + bytes.length);
 
-//  public static void main(String[] args) throws Exception {
-//    String keyStr1 = "DEADBEEFDEADBEEFDEADBEEF";
-//    String keyStr2 = "DEADBEEFDEADBEEFDEADBEEF";
-//    AuthenticationManager authman1 = new AuthenticationManager(keyStr1); 
-//    AuthenticationManager authman2 = new AuthenticationManager(keyStr2); 
-//    String big = keyStr1 + keyStr1 + keyStr1 + keyStr1 + keyStr1 + keyStr2;
-//    String test1 = Util.toHexString(authman1.encrypt(big));
-//    String test2 = authman2.decrypt(Util.toByteArray(test1));
-//    System.out.println(test2);
-//  }
+    return nonces;
+  }
+
+  public static void main(String[] args) throws Exception {
+    String keyStr1 = "DEADBEEFDEADBEEFDEADBEEF";
+    String keyStr2 = "DEADBEEFDEADBEEFDEADBEEF";
+    AuthenticationManager authman1 = new AuthenticationManager(keyStr1); 
+    long nonce1 = authman1.getNonce();
+    long nonce2 = authman1.getNonce();
+    System.out.println("N1: " + nonce1);
+    System.out.println("N2: " + nonce1);
+    String n0 = ",";
+    String n1 = String.valueOf(nonce1);
+    String n2 = String.valueOf(nonce2);
+    String n3 = nonce1 + "," + nonce2;
+
+    String test0 = Util.toHexString(authman1.encrypt(n0));
+    String test1 = Util.toHexString(authman1.encrypt(n1));
+    String test2 = Util.toHexString(authman1.encrypt(n2));
+    String test3 = Util.toHexString(authman1.encrypt(n3));
+    authman1.extractNonces(test0);
+    authman1.extractNonces(test1);
+    authman1.extractNonces(test2);
+    authman1.extractNonces(test3);
+
+    System.out.println(authman1.decrypt(Util.toByteArray(test0)));
+    System.out.println(authman1.decrypt(Util.toByteArray(test1)));
+    System.out.println(authman1.decrypt(Util.toByteArray(test2)));
+    System.out.println(authman1.decrypt(Util.toByteArray(test3)));
+  }
 }
 

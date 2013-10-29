@@ -1,9 +1,15 @@
 public class Bob extends TcpServer {
   public static Integer PORT = 8889;
   private Protocol proto = null;
+  private boolean expanded = false;
 
   public Bob() {
-    proto = new ExpandedNeedhamSchroederServerProtocol();
+    if(expanded) {
+      proto = new ExpandedNeedhamSchroederServerProtocol();
+    }
+    else {
+      proto = new NeedhamSchroederServerProtocol();
+    }
   }
 
   public Protocol getProtocol() {
