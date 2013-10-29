@@ -70,7 +70,7 @@ class AuthenticationManager {
   public Cipher getCipher(int mode) {
     try {
       if(cipher == null) {
-        cipher = Cipher.getInstance(encryptionAlgorithm);
+        cipher = Cipher.getInstance(format1);
       }
 
       cipher.init(mode, key);

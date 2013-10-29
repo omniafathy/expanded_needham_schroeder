@@ -6,7 +6,8 @@ public class NeedhamSchroederServerProtocol extends Protocol {
   protected long challenge;
   protected State current_state;
   protected ArrayList<String> knownClients;
-  protected boolean disconnect;
+  protected boolean disconnect, reflection;
+  protected String REFLECTION_CLIENT = "Trudy";
   protected enum State { 
     TICKET,
     CHALLENGE,
@@ -18,6 +19,14 @@ public class NeedhamSchroederServerProtocol extends Protocol {
     knownClients = new ArrayList<String>();
     init();
   }
+
+  public NeedhamSchroederServerProtocol(boolean ref) {
+    authKDC = new AuthenticationManager(KEY_BOB);
+    knownClients = new ArrayList<String>();
+    reflection = ref;
+    init();
+  }
+
 
   protected void buildKnownClients() {
     knownClients.add("Alice");
@@ -42,7 +51,8 @@ public class NeedhamSchroederServerProtocol extends Protocol {
   protected void nextState() {
     switch(current_state) {
       case TICKET:
-        current_state = State.CHALLENGE;
+        if(!reflection)
+          current_state = State.CHALLENGE;
         break;
       case CHALLENGE:
         current_state = State.AUTHENTICATED;
@@ -106,12 +116,22 @@ public class NeedhamSchroederServerProtocol extends Protocol {
 
       if(!knownClients.contains(ticket[1])) {
         return null;
-      }
+      } 
 
       authAlice = new AuthenticationManager(ticket[0]);
       long nonce = Long.valueOf(authAlice.decrypt(Util.toByteArray(request[1])));
       long answer = nonce - 1;
       challenge = authAlice.getNonce();
+
+      if(reflection) {
+        // My implementation did not work with NOPADDING so instead I am
+        // simulating Trudy being able to read the nonces sent back from
+        // bob by sending Kab{n1},Kab{n2}.
+        String answerBytes = Util.toHexString(authAlice.encrypt(String.valueOf(answer)));
+        String challengeBytes = Util.toHexString(authAlice.encrypt(String.valueOf(challenge)));
+        String response = answerBytes + "," + challengeBytes;
+        return response;
+      }
 
       nextState();
       byte[] response = authAlice.encrypt(answer + "," + challenge);

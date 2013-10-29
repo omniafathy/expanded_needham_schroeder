@@ -1,4 +1,4 @@
-install: authman alice bob ENSclient ENSkdc ENSserver kdc nsclient nskdc nsserver NSRunner protocol tcpClient tcpObject tcpServer util
+install: authman alice bob ENSclient ENSkdc ENSserver kdc nsclient nskdc nsserver NSRunner protocol tcpClient tcpObject tcpServer util reflectionProtocol trudy ReflectionRunner
 
 authman: AuthenticationManager.java
 	javac AuthenticationManager.java
@@ -33,8 +33,14 @@ nsserver: NeedhamSchroederServerProtocol.java
 NSRunner: NSRunner.java
 	javac NSRunner.java
 
+ReflectionRunner: ReflectionRunner.java
+	javac ReflectionRunner.java
+
 protocol: Protocol.java
 	javac Protocol.java
+
+reflectionProtocol: NeedhamSchroederReflectionProtocol.java
+	javac NeedhamSchroederReflectionProtocol.java
 
 run: install
 	java NSRunner
@@ -51,6 +57,9 @@ runBob: bob
 runKdc: kdc
 	java Kdc
 
+runRef: trudy ReflectionRunner reflectionProtocol
+	java ReflectionRunner
+
 tcpClient: TcpClient.java
 	javac TcpClient.java
 
@@ -59,6 +68,9 @@ tcpObject: TcpObject.java
 
 tcpServer: TcpServer.java
 	javac TcpServer.java
+
+trudy: Trudy.java
+	javac Trudy.java
 
 util: Util.java
 	javac Util.java

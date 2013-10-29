@@ -33,7 +33,9 @@ public class Alice extends TcpClient {
   }
 
   public void start() {
-    start(hosts.get("Bob"));
+    if(expanded) {
+      start(hosts.get("Bob"));
+    }
     start(hosts.get("KDC"));
     start(hosts.get("Bob"));
   }
