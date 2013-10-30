@@ -1,3 +1,55 @@
+Code Structure:
+===============
+
+My code is built on a client server implementation where each instance 
+expects a protocol. The protocol is a state machine that determines what
+to send based on it's current state and what messages it has recieved.
+
+Each client and server also have their own AuthenticationManger. The
+AuthenticationManger is responsible for encryption, decryption, nonce
+generation, and key generation.
+
+The client and server files are:
+  Alice.java
+  Bob.java
+  Kdc.java
+  Trudy.java
+  TcpClient.java
+  TcpServer.jaca
+  TcpObject.java
+
+The protocol files are:
+  ExpandedNeedhamSchroederClientProtocol.java
+  ExpandedNeedhamSchroederKdcProtocol.java
+  ExpandedNeedhamSchroederServerProtocol.java
+  NeedhamSchroederClientProtocol.java
+  NeedhamSchroederKdcProtocol.java
+  NeedhamSchroederServerProtocol.java
+  NeedhamSchroederReflectionProtocol.java
+  Protocol.java
+
+My project also makes use of runner files that start the necesary
+servers and clients.
+  ENSRunner.java - this is the Expanded Needham Schroeder runner
+  NSRunner.java  - this is the Needham Schroeder runner
+  ReflectionRunner.java - this is the runner for the reflection attack
+  
+Miscellaneous:
+  AuthenticationManger.java - Responsible for all things related to
+encryption
+  Util.java - Utility functions like writing to files
+
+Solutions:
+  expanded_needham_schroeder.txt - contains a successful ENS
+authentication
+  ref_needham_schroeder.txt - contains an attempt at a reflection attack
+
+
+
+
+
+
+
 expanded_needham_schroeder
 ==========================
 
