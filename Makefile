@@ -40,21 +40,6 @@ util: $(UTIL_DIR)/Util.java
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #install: authman alice bob ENSclient ENSkdc ENSserver kdc nsclient nskdc nsserver NSRunner protocol tcpClient tcpObject tcpServer util reflectionProtocol trudy ReflectionRunner
 
 #ENSclient: ExpandedNeedhamSchroederClientProtocol.java
